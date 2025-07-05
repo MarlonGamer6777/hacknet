@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Hacknet Browser Startseite</title>
+    <style>
+        body {
+            background: #181c20;
+            color: #e0e0e0;
+            font-family: 'Consolas', 'Courier New', monospace;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 60px auto;
+            background: #23272b;
+            border-radius: 12px;
+            box-shadow: 0 0 24px #000a;
+            padding: 32px 40px;
+            text-align: center;
+        }
+        h1 {
+            color: #00ffe7;
+            margin-bottom: 12px;
+        }
+        p {
+            color: #b0b0b0;
+            margin-bottom: 24px;
+        }
+        .links a {
+            display: inline-block;
+            margin: 8px 16px;
+            color: #00ffe7;
+            text-decoration: none;
+            font-weight: bold;
+            border-bottom: 2px solid transparent;
+            transition: border 0.2s;
+        }
+        .links a:hover {
+            border-bottom: 2px solid #00ffe7;
+        }
+        .footer {
+            margin-top: 32px;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Willkommen im Hacknet Browser</h1>
+        <p>Gib oben eine Adresse ein oder wähle einen Link:</p>
+        <div class="links">
+            <a href="hacknet://info">Info</a>
+            <a href="hacknet://tutorial">Tutorial</a>
+            <a href="hacknet://tools">Tools</a>
+            <a href="hacknet://about">Über</a>
+        </div>
+        <div class="footer">
+            &copy; 2025 Hacknet Browser &ndash; made with ♥
+        </div>

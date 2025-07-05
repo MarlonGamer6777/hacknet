@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Hacknet Suche</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #111;
+      color: #0f0;
+      padding: 2em;
+    }
+    input, button {
+      padding: 0.5em;
+      font-size: 1em;
+      background: black;
+      color: lime;
+      border: 1px solid #0f0;
+    }
+    .result {
+      margin-top: 1em;
+    }
+    a {
+      color: cyan;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 Hacknet Suche</h1>
+  <input type="text" id="query" placeholder="Suchbegriff">
+  <button onclick="search()">Suchen</button>
+
+  <div class="result" id="results"></div>
+
+  <script>
+    const PAGES = ["startpage", "news", "tools", "hilfe"]; // ← hier deine Seiten eintragen
+
+    async function search() {
+      const q = document.getElementById("query").value.toLowerCase();
+      const res = document.getElementById("results");
+      res.innerHTML = "<p>Suche läuft...</p>";
+
+      let output = "";
+      for (const page of PAGES) {
+        try {
+          const r = await fetch(`../${page}.html`);
+          const t = await r.text();
+          if (t.toLowerCase().includes(q)) {
+            output += `<p><a href="hacknet://${page}">${page}</a> enthält "${q}"</p>`;
+          }
+        } catch (err) {
+          output += `<p style="color:red;">Fehler bei ${page}</p>`;
+        }
+      }
+
+      res.innerHTML = output || "<p>❌ Nichts gefunden</p>";
+    }
+  </script>
+</body>
+</html>

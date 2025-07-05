@@ -29,24 +29,24 @@
 <body>
   <h1>🔍 Hacknet Suche</h1>
   <input type="text" id="query" placeholder="Suchbegriff">
-  <button onclick="duckSearch()">DuckDuckGo-Suche</button>
+  <button onclick="googleSearch()">Google-Suche</button>
 
   <div class="result" id="results"></div>
 
   <script>
-    function duckSearch() {
+    function googleSearch() {
       const q = document.getElementById("query").value.trim();
       const res = document.getElementById("results");
       if (!q) {
         res.innerHTML = "<p>Bitte gib einen Suchbegriff ein.</p>";
         return;
       }
-      const duckUrl = "https://duckduckgo.com/?q=" + encodeURIComponent(q);
+      const googleUrl = "https://www.google.com/search?q=" + encodeURIComponent(q);
       // Öffne die Suche in einem neuen Tab
-      window.open(duckUrl, "_blank");
+      window.open(googleUrl, "_blank");
       // Zeige einen Hinweis im aktuellen Fenster mit JS-Link
       res.innerHTML = `<p>Die Suche wurde in einem neuen Tab geöffnet.<br>
-        <a onclick="window.open('${duckUrl}', '_blank')">Hier klicken, falls nichts passiert ist.</a></p>`;
+        <a onclick="window.open('${googleUrl}', '_blank')">Hier klicken, falls nichts passiert ist.</a></p>`;
     }
   </script>
 </body>

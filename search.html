@@ -22,6 +22,7 @@
     }
     a {
       color: cyan;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -43,9 +44,9 @@
       const duckUrl = "https://duckduckgo.com/?q=" + encodeURIComponent(q);
       // Öffne die Suche in einem neuen Tab
       window.open(duckUrl, "_blank");
-      // Optional: Zeige einen Hinweis im aktuellen Fenster
+      // Zeige einen Hinweis im aktuellen Fenster mit JS-Link
       res.innerHTML = `<p>Die Suche wurde in einem neuen Tab geöffnet.<br>
-        <a href="${duckUrl}" target="_blank">Hier klicken, falls nichts passiert ist.</a></p>`;
+        <a onclick="window.open('${duckUrl}', '_blank')">Hier klicken, falls nichts passiert ist.</a></p>`;
     }
   </script>
 </body>

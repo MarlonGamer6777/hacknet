@@ -23,17 +23,23 @@
     a {
       color: cyan;
     }
+    iframe {
+      width: 100%;
+      height: 70vh;
+      border: 1px solid #0f0;
+      background: #fff;
+    }
   </style>
 </head>
 <body>
   <h1>🔍 Hacknet Suche</h1>
   <input type="text" id="query" placeholder="Suchbegriff">
-  <button onclick="search()">Google-Suche</button>
+  <button onclick="duckSearch()">DuckDuckGo-Suche</button>
 
   <div class="result" id="results"></div>
 
   <script>
-    async function search() {
+    function duckSearch() {
       const q = document.getElementById("query").value.trim();
       const res = document.getElementById("results");
       if (!q) {
@@ -42,15 +48,13 @@
       }
       res.innerHTML = "<p>Suche läuft...</p>";
 
-      // Google Custom Search API (öffentliches Scraping ist nicht erlaubt)
-      // Wir leiten einfach weiter und zeigen einen Hinweis an
-      const googleUrl = "https://www.google.com/search?q=" + encodeURIComponent(q);
+      // DuckDuckGo-Suche als Link und im iframe anzeigen
+      const duckUrl = "https://duckduckgo.com/?q=" + encodeURIComponent(q);
 
-      // Versuche, die Google-Ergebnisse im iFrame anzuzeigen
       res.innerHTML = `
-        <p>Ergebnisse von <a href="${googleUrl}" target="_blank">Google</a>:</p>
-        <iframe src="${googleUrl}" style="width:100%;height:70vh;border:1px solid #0f0;background:#fff"></iframe>
-        <p style="color:#888;font-size:0.9em;">Falls die Ergebnisse nicht angezeigt werden, <a href="${googleUrl}" target="_blank">hier klicken</a>.</p>
+        <p>Ergebnisse von <a href="${duckUrl}" target="_blank">DuckDuckGo</a>:</p>
+        <iframe src="${duckUrl}"></iframe>
+        <p style="color:#888;font-size:0.9em;">Falls die Ergebnisse nicht angezeigt werden, <a href="${duckUrl}" target="_blank">hier klicken</a>.</p>
       `;
     }
   </script>

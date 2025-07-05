@@ -23,12 +23,6 @@
     a {
       color: cyan;
     }
-    iframe {
-      width: 100%;
-      height: 70vh;
-      border: 1px solid #0f0;
-      background: #fff;
-    }
   </style>
 </head>
 <body>
@@ -46,16 +40,12 @@
         res.innerHTML = "<p>Bitte gib einen Suchbegriff ein.</p>";
         return;
       }
-      res.innerHTML = "<p>Suche läuft...</p>";
-
-      // DuckDuckGo-Suche als Link und im iframe anzeigen
       const duckUrl = "https://duckduckgo.com/?q=" + encodeURIComponent(q);
-
-      res.innerHTML = `
-        <p>Ergebnisse von <a href="${duckUrl}" target="_blank">DuckDuckGo</a>:</p>
-        <iframe src="${duckUrl}"></iframe>
-        <p style="color:#888;font-size:0.9em;">Falls die Ergebnisse nicht angezeigt werden, <a href="${duckUrl}" target="_blank">hier klicken</a>.</p>
-      `;
+      // Öffne die Suche in einem neuen Tab
+      window.open(duckUrl, "_blank");
+      // Optional: Zeige einen Hinweis im aktuellen Fenster
+      res.innerHTML = `<p>Die Suche wurde in einem neuen Tab geöffnet.<br>
+        <a href="${duckUrl}" target="_blank">Hier klicken, falls nichts passiert ist.</a></p>`;
     }
   </script>
 </body>

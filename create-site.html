@@ -1,143 +1,92 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Neue Hacknet-Website erstellen</title>
-<style>
-  body {
-    background-color: #0f0f0f;
-    color: #00ff00;
-    font-family: "Courier New", Courier, monospace;
-    margin: 30px auto;
-    max-width: 700px;
-    padding: 20px;
-    border: 2px solid #00ff00;
-    border-radius: 8px;
-  }
-  h1 {
-    text-align: center;
-    text-shadow: 0 0 5px #00ff00;
-  }
-  label {
-    display: block;
-    margin-top: 20px;
-    font-weight: bold;
-    text-shadow: 0 0 3px #00ff00;
-  }
-  input, textarea {
-    width: 100%;
-    background: #121212;
-    border: 1px solid #00ff00;
-    border-radius: 4px;
-    color: #00ff00;
-    padding: 10px;
-    margin-top: 8px;
-    font-family: "Courier New", Courier, monospace;
-    font-size: 14px;
-  }
-  textarea {
-    resize: vertical;
-  }
-  button {
-    margin-top: 25px;
-    background-color: #00ff00;
-    color: #0f0f0f;
-    border: none;
-    padding: 12px 25px;
-    font-weight: bold;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    text-shadow: none;
-  }
-  button:hover {
-    background-color: #00cc00;
-  }
-  #result {
-    margin-top: 30px;
-    text-align: center;
-    font-weight: bold;
-    font-size: 16px;
-    min-height: 24px;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <title>Hacknet Site Creator</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #0f0;
+      font-family: monospace;
+      padding: 20px;
+    }
+    input, textarea, button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      background: #000;
+      color: #0f0;
+      border: 1px solid #0f0;
+      font-family: monospace;
+    }
+    button:hover {
+      background-color: #030;
+      cursor: pointer;
+    }
+    #message {
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
-<h1>Neue Hacknet-Website erstellen</h1>
+  <h1>🌐 Hacknet Website erstellen</h1>
 
-<label for="link">Name der Seite (z.B. meine-seite)</label>
-<input type="text" id="link" placeholder="hacknet://meine-seite" />
+  <label for="name">Seitenname (wird zu hacknet://[name])</label>
+  <input id="name" placeholder="z. B. meine-seite" />
 
-<label for="owner">Dein Name (Owner)</label>
-<input type="text" id="owner" placeholder="Dein Name" />
+  <label for="author">Dein Name</label>
+  <input id="author" placeholder="z. B. Marlon" />
 
-<label for="desc">Beschreibung (optional)</label>
-<textarea id="desc" rows="2" placeholder="Kurze Beschreibung"></textarea>
+  <label for="html">HTML-Inhalt</label>
+  <textarea id="html" rows="15" placeholder="<!DOCTYPE html>..."></textarea>
 
-<label for="code">HTML-Code der Seite</label>
-<textarea id="code" rows="15" placeholder="Hier den HTML-Code deiner Seite eingeben..."></textarea>
+  <button onclick="uploadSite()">Veröffentlichen</button>
+  <div id="message"></div>
 
-<button onclick="upload()">Seite hochladen</button>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
 
-<div id="result"></div>
+  <script>
+    const firebaseConfig = {
+      databaseURL: "https://hacknet-sites-by-users-default-rtdb.firebaseio.com/"
+    };
 
-<script>
-const FIREBASE_DB = "https://hacknet-sites-by-users-default-rtdb.firebaseio.com/";
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database(app);
 
-async function upload() {
-    const link = document.getElementById('link').value.trim();
-    const owner = document.getElementById('owner').value.trim();
-    const desc = document.getElementById('desc').value.trim();
-    const code = document.getElementById('code').value.trim();
+    async function uploadSite() {
+      const name = document.getElementById("name").value.trim();
+      const author = document.getElementById("author").value.trim();
+      const html = document.getElementById("html").value.trim();
+      const msg = document.getElementById("message");
 
-    if (!link || !code) {
-        document.getElementById('result').innerText = "⚠️ Link und HTML-Code dürfen nicht leer sein.";
+      if (!name || !author || !html) {
+        msg.textContent = "⚠ Bitte fülle alle Felder aus!";
+        msg.style.color = "#ff0";
         return;
-    }
+      }
 
-    try {
-        // Prüfen, ob Seite schon existiert:
-        const checkRes = await fetch(`${FIREBASE_DB}sites/${encodeURIComponent(link)}.json`);
-        const existing = await checkRes.json();
-        if (existing !== null) {
-            document.getElementById('result').innerText = "❌ Fehler: Name bereits verwendet!";
-            return;
-        }
+      const siteRef = firebase.database().ref("sites/" + name);
 
-        const data = {
-            owner: owner,
-            description: desc,
-            html: code,
-            approved: false,
-            timestamp: Date.now()
-        };
-
-        const res = await fetch(`${FIREBASE_DB}sites/${encodeURIComponent(link)}.json`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
-
-        if (res.ok) {
-            document.getElementById('result').innerText = "✅ Erfolgreich hochgeladen! Warte auf Freischaltung.";
-            // Optional: Felder leeren
-            // document.getElementById('link').value = "";
-            // document.getElementById('owner').value = "";
-            // document.getElementById('desc').value = "";
-            // document.getElementById('code').value = "";
+      siteRef.once("value").then((snapshot) => {
+        if (snapshot.exists()) {
+          msg.textContent = "❌ Fehler: Name bereits verwendet!";
+          msg.style.color = "#f00";
         } else {
-            document.getElementById('result').innerText = "❌ Fehler beim Hochladen.";
+          siteRef.set({
+            author: author,
+            html: html
+          }).then(() => {
+            msg.textContent = "✅ Website erfolgreich veröffentlicht unter hacknet://" + name;
+            msg.style.color = "#0f0";
+          }).catch((error) => {
+            msg.textContent = "❌ Fehler beim Hochladen: " + error;
+            msg.style.color = "#f00";
+          });
         }
-    } catch (e) {
-        document.getElementById('result').innerText = "❌ Fehler: " + e.message;
+      });
     }
-}
-</script>
-
+  </script>
 </body>
 </html>

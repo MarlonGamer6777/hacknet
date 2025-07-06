@@ -1,64 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-    <title>Website veröffentlichen – Hacknet</title>
-    <style>
-        body { font-family: monospace; background: #111; color: #0f0; padding: 20px; }
-        input, textarea, button { width: 100%; margin: 8px 0; background: #222; color: #0f0; border: 1px solid #0f0; padding: 8px; }
-        button:hover { background: #0f0; color: #000; cursor: pointer; }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Neue Hacknet-Website erstellen</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; max-width: 600px; }
+  label { display: block; margin-top: 15px; }
+  input, textarea { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
+  button { margin-top: 15px; padding: 10px 20px; }
+  #result { margin-top: 20px; font-weight: bold; }
+</style>
 </head>
 <body>
-    <h1>🔧 Website veröffentlichen</h1>
+<h1>Neue Hacknet-Website erstellen</h1>
 
-    <label>Dein Website-Link (z. B. <code>meinprojekt</code> wird <code>hacknet://meinprojekt</code>)</label>
-    <input type="text" id="link" placeholder="meinprojekt">
+<label for="link">Name der Seite (z.B. meine-seite)</label>
+<input type="text" id="link" placeholder="hacknet://meine-seite" />
 
-    <label>Dein Name</label>
-    <input type="text" id="owner" placeholder="z. B. Marlon">
+<label for="owner">Dein Name (Owner)</label>
+<input type="text" id="owner" placeholder="Dein Name" />
 
-    <label>Beschreibung</label>
-    <input type="text" id="desc" placeholder="Was macht die Seite?">
+<label for="desc">Beschreibung (optional)</label>
+<textarea id="desc" rows="2" placeholder="Kurze Beschreibung"></textarea>
 
-    <label>HTML-Code deiner Seite</label>
-    <textarea id="code" rows="10" placeholder="<!DOCTYPE html> ..."></textarea>
+<label for="code">HTML-Code der Seite</label>
+<textarea id="code" rows="15" placeholder="Hier den HTML-Code deiner Seite eingeben..."></textarea>
 
-    <button onclick="upload()">📤 Hochladen</button>
+<button onclick="upload()">Seite hochladen</button>
 
-    <p id="result"></p>
+<div id="result"></div>
 
-    <script>
-    async function upload() {
-        const link = document.getElementById('link').value.trim();
-        const owner = document.getElementById('owner').value.trim();
-        const desc = document.getElementById('desc').value.trim();
-        const code = document.getElementById('code').value.trim();
+<script>
+const FIREBASE_DB = "https://hacknet-sites-by-users-default-rtdb.firebaseio.com/";
 
-        if (!link || !code) {
-            document.getElementById('result').innerText = "⚠️ Link und HTML-Code dürfen nicht leer sein.";
-            return;
-        }
+async function upload() {
+    const link = document.getElementById('link').value.trim();
+    const owner = document.getElementById('owner').value.trim();
+    const desc = document.getElementById('desc').value.trim();
+    const code = document.getElementById('code').value.trim();
 
-        const data = {
-            owner: owner,
-            description: desc,
-            html: code,
-            approved: false,  // Du prüfst die Seite später
-            timestamp: Date.now()
-        };
-
-        const res = await fetch(`https://hacknet-sites-by-users-default-rtdb.firebaseio.com/sites/${link}.json`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
-
-        if (res.ok) {
-            document.getElementById('result').innerText = "✅ Erfolgreich hochgeladen! Warte auf Freischaltung.";
-        } else {
-            document.getElementById('result').innerText = "❌ Fehler beim Hochladen.";
-        }
+    if (!link || !code) {
+        document.getElementById('result').innerText = "⚠️ Link und HTML-Code dürfen nicht leer sein.";
+        return;
     }
-    </script>
+
+    // Prüfen, ob Seite schon existiert:
+    const checkRes = await fetch(`${FIREBASE_DB}sites/${link}.json`);
+    const existing = await checkRes.json();
+    if (existing !== null) {
+        document.getElementById('result').innerText = "❌ Fehler: Name bereits verwendet!";
+        return;
+    }
+
+    const data = {
+        owner: owner,
+        description: desc,
+        html: code,
+        approved: false,
+        timestamp: Date.now()
+    };
+
+    const res = await fetch(`${FIREBASE_DB}sites/${link}.json`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
+
+    if (res.ok) {
+        document.getElementById('result').innerText = "✅ Erfolgreich hochgeladen! Warte auf Freischaltung.";
+    } else {
+        document.getElementById('result').innerText = "❌ Fehler beim Hochladen.";
+    }
+}
+</script>
+
 </body>
 </html>

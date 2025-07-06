@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Website veröffentlichen – Hacknet</title>
+    <style>
+        body { font-family: monospace; background: #111; color: #0f0; padding: 20px; }
+        input, textarea, button { width: 100%; margin: 8px 0; background: #222; color: #0f0; border: 1px solid #0f0; padding: 8px; }
+        button:hover { background: #0f0; color: #000; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Website veröffentlichen</h1>
+
+    <label>Dein Website-Link (z. B. <code>meinprojekt</code> wird <code>hacknet://meinprojekt</code>)</label>
+    <input type="text" id="link" placeholder="meinprojekt">
+
+    <label>Dein Name</label>
+    <input type="text" id="owner" placeholder="z. B. Marlon">
+
+    <label>Beschreibung</label>
+    <input type="text" id="desc" placeholder="Was macht die Seite?">
+
+    <label>HTML-Code deiner Seite</label>
+    <textarea id="code" rows="10" placeholder="<!DOCTYPE html> ..."></textarea>
+
+    <button onclick="upload()">📤 Hochladen</button>
+
+    <p id="result"></p>
+
+    <script>
+    async function upload() {
+        const link = document.getElementById('link').value.trim();
+        const owner = document.getElementById('owner').value.trim();
+        const desc = document.getElementById('desc').value.trim();
+        const code = document.getElementById('code').value.trim();
+
+        if (!link || !code) {
+            document.getElementById('result').innerText = "⚠️ Link und HTML-Code dürfen nicht leer sein.";
+            return;
+        }
+
+        const data = {
+            owner: owner,
+            description: desc,
+            html: code,
+            approved: false,  // Du prüfst die Seite später
+            timestamp: Date.now()
+        };
+
+        const res = await fetch(`https://hacknet-sites-by-users-default-rtdb.firebaseio.com/sites/${link}.json`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+        if (res.ok) {
+            document.getElementById('result').innerText = "✅ Erfolgreich hochgeladen! Warte auf Freischaltung.";
+        } else {
+            document.getElementById('result').innerText = "❌ Fehler beim Hochladen.";
+        }
+    }
+    </script>
+</body>
+</html>
